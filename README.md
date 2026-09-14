@@ -39,17 +39,28 @@ pip install django pillow django-tailwind
 
 ### 3. Configure environment variables
 
-Copy `.env.example` to `.env` or set the variables in your shell. Django does not load `.env` automatically, so shell variables or a deployment secret manager must provide them.
+Copy `.env.example` to `.env` or set the variables in your shell. The project loads `.env` automatically for local development.
 
 For local development:
 
 ```powershell
-$env:DJANGO_SECRET_KEY = "generate-a-long-random-secret"
+$env:DJANGO_SECRET_KEY = "generate-a-long-random-secret-and-make-it-at-least-50-characters"
 $env:DJANGO_DEBUG = "True"
 $env:DJANGO_ALLOWED_HOSTS = "localhost,127.0.0.1"
+$env:DJANGO_CSRF_TRUSTED_ORIGINS = "http://localhost:8000,http://127.0.0.1:8000"
 ```
 
-For production, use a strong secret, set `DJANGO_DEBUG=False`, and provide the real host names in `DJANGO_ALLOWED_HOSTS`.
+For production, set `DJANGO_DEBUG=False`, use a long random secret, and provide the real host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`.
+
+For PostgreSQL production deployments, set the database variables:
+
+```powershell
+$env:POSTGRES_HOST = "db"
+$env:POSTGRES_DB = "blip"
+$env:POSTGRES_USER = "blip"
+$env:POSTGRES_PASSWORD = "change-me"
+$env:POSTGRES_PORT = "5432"
+```
 
 ### 4. Apply migrations
 
@@ -85,6 +96,25 @@ Build the stylesheet for production:
 ```powershell
 npm run build
 ```
+
+## Docker / production deployment
+
+The project includes a production-oriented `Dockerfile` and `docker-compose.yml` for local containerized deployment.
+
+```powershell
+docker compose up --build
+```
+
+This starts the web service and a PostgreSQL database. For hosted deployments, make sure the correct environment variables are injected at runtime and keep `.env` files out of source control.
+
+## Render deployment
+
+A `render.yaml` file is included for one-click deployment to Render.
+
+1. Push this project to a GitHub repository.
+2. In Render, select "New +" > "Blueprint" and connect the repository.
+3. Render will create the web service and PostgreSQL database automatically from the blueprint.
+4. Set the custom domain and production secret values inside the Render dashboard if needed.
 
 ## Security
 

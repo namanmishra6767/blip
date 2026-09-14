@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: blip
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn blip.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blip-db
+          property: connectionString
+    healthCheckPath: /posts/home/
+    autoDeploy: true
+
+databases:
+  - name: blip-db
+    databaseName: blip
+    user: blip
+    plan: free

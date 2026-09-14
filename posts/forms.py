@@ -1,12 +1,41 @@
-from django import forms 
-from .models import Posts
+import os
+
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
+from .models import Posts
+
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Posts
-        fields = ['text','image']
+        fields = ['text', 'image']
+
+    def clean_text(self):
+        text = self.cleaned_data.get('text', '').strip()
+        if not text:
+            raise ValidationError('Post text cannot be empty.')
+        if len(text) > 250:
+            raise ValidationError('Posts must be 250 characters or fewer.')
+        return text
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if not image:
+            return image
+
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
+        extension = os.path.splitext(image.name)[1].lower()
+        if extension not in allowed_extensions:
+            raise ValidationError('Only JPG, PNG, GIF, and WEBP images are allowed.')
+
+        if image.size > 5 * 1024 * 1024:
+            raise ValidationError('Image uploads must be 5MB or smaller.')
+
+        return image
+
 
 class UserRegistrationForm(UserCreationForm):
     input_class = 'w-full rounded-lg border border-[#343a43] bg-[#090b0e] p-3 focus:outline-none focus:ring-2 focus:ring-[#c6ff24]'
