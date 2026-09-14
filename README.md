@@ -6,8 +6,6 @@ BLIP is a Django-powered microblogging platform inspired by Twitter/X. Users can
 
 - User registration and login
 - Case-insensitive duplicate email protection
-- Home feed at `/`
-- Explore page at `/explore/`
 - Create posts with up to 250 characters
 - Optional image uploads
 - Live character counter
