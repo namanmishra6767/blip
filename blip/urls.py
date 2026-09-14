@@ -22,6 +22,7 @@ from posts import views as post_views
 
 
 urlpatterns = [
+    path('health/', post_views.health_check, name='health_check'),
     path('', post_views.post_list, name='home'),
     path('explore/', post_views.index, name='index'),
     path('admin/', admin.site.urls),

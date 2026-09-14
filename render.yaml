@@ -22,7 +22,7 @@ services:
         fromDatabase:
           name: blip-db
           property: connectionString
-    healthCheckPath: /posts/home/
+    healthCheckPath: /health/
     autoDeploy: true
 
 databases:

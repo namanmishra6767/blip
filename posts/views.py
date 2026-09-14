@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Posts
 from .forms import PostForm, UserRegistrationForm
@@ -5,6 +6,10 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.db import IntegrityError
+
+
+def health_check(request):
+    return HttpResponse('ok')
 
 # Create your views here.
 def index(request):
