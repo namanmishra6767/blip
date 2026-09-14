@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% if form.instance.pk %}Edit blip{% else %}Create a blip{% endif %} | BLIP
+{% endblock %}
+
+{% block content %}
+<div class="w-full min-h-screen border-x border-[#24282e]">
+    <div class="border-b border-[#24282e] px-6 py-5">
+        <h1 class="text-xl font-bold">
+            {% if form.instance.pk %}Edit blip{% else %}Create a blip{% endif %}
+        </h1>
+    </div>
+
+    <div class="mx-auto max-w-2xl px-6 py-8">
+        <form method="post" enctype="multipart/form-data" class="rounded-2xl border border-[#343a43] bg-[#111419] p-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="mb-5 rounded-lg border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-300">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 shrink-0 rounded-full bg-[#202b3d] flex items-center justify-center text-lg font-bold">
+                    {{ request.user.username|first|upper }}
+                </div>
+                <div class="flex-1">
+                    <label class="sr-only" for="{{ form.text.id_for_label }}">What's happening?</label>
+                    <textarea id="{{ form.text.id_for_label }}" name="{{ form.text.html_name }}" maxlength="250" required rows="6" class="w-full resize-none rounded-xl border border-[#343a43] bg-[#090b0e] p-4 text-lg focus:outline-none focus:ring-2 focus:ring-[#c6ff24]" placeholder="What's happening?" data-post-text>{{ form.text.value|default_if_none:'' }}</textarea>
+                    {% for error in form.text.errors %}
+                        <p class="mt-2 text-sm text-red-300">{{ error }}</p>
+                    {% endfor %}
+
+                    <div class="mt-3 flex items-center justify-between gap-3 text-sm text-[#777d87]">
+                        <label class="cursor-pointer rounded-full border border-[#343a43] px-4 py-2 hover:border-[#c6ff24] hover:text-[#c6ff24]" for="{{ form.image.id_for_label }}">Add image</label>
+                        <span><span data-character-count>250</span> characters remaining</span>
+                    </div>
+                    <input id="{{ form.image.id_for_label }}" name="{{ form.image.html_name }}" type="file" accept="image/*" class="hidden" data-image-input>
+                    <span class="mt-2 block truncate text-xs text-[#777d87]" data-image-name>No image selected</span>
+                    {% for error in form.image.errors %}
+                        <p class="mt-2 text-sm text-red-300">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <a class="rounded-full border border-[#343a43] px-5 py-2 font-medium hover:bg-[#1a1e24]" href="{% url 'post_list' %}">Cancel</a>
+                <button class="rounded-full bg-[#c6ff24] px-6 py-2 font-bold text-[#090b0e] hover:bg-[#d5ff62]" type="submit">
+                    {% if form.instance.pk %}Save changes{% else %}Blip it{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const textInput = document.querySelector('[data-post-text]');
+    const characterCount = document.querySelector('[data-character-count]');
+    const imageInput = document.querySelector('[data-image-input]');
+    const imageName = document.querySelector('[data-image-name]');
+
+    function updateCharacterCount() {
+        characterCount.textContent = 250 - textInput.value.length;
+    }
+
+    textInput.addEventListener('input', updateCharacterCount);
+    imageInput.addEventListener('change', () => {
+        imageName.textContent = imageInput.files.length ? imageInput.files[0].name : 'No image selected';
+    });
+    updateCharacterCount();
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Delete blip | BLIP
+{% endblock %}
+
+{% block content %}
+<div class="w-full min-h-screen border-x border-[#24282e]">
+    <div class="mx-auto max-w-lg px-6 py-16">
+        <div class="rounded-2xl border border-[#343a43] bg-[#111419] p-6">
+            <h1 class="text-xl font-bold">Delete this blip?</h1>
+            <p class="mt-3 text-[#a9adb5]">This action cannot be undone.</p>
+            <p class="mt-4 rounded-lg border border-[#24282e] bg-[#090b0e] p-4 text-[#e7e9ea]">{{ post.text }}</p>
+
+            <form method="post" class="mt-6 flex justify-end gap-3">
+                {% csrf_token %}
+                <a class="rounded-full border border-[#343a43] px-5 py-2 font-medium hover:bg-[#1a1e24]" href="{% url 'post_list' %}">Cancel</a>
+                <button class="rounded-full bg-red-500 px-5 py-2 font-bold text-white hover:bg-red-400" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

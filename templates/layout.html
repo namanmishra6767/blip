@@ -1,0 +1,129 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BLIP{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+<body class="min-h-screen bg-[#090b0e] text-[#e7e9ea]">
+    <div class="lg:hidden flex justify-between items-center border-b border-[#24282e] px-4 py-3">
+        <a class="font-bold text-xl" href="{% url 'home' %}">blip</a>
+        <button type="button" class="rounded-full border border-[#343a43] px-3 py-2 text-sm" aria-label="Toggle navigation" data-hs-overlay="#blip-sidebar">
+            Menu
+        </button>
+    </div>
+
+    <aside id="blip-sidebar" class="hs-overlay [--auto-close:lg] lg:block lg:translate-x-0 lg:inset-e-auto lg:bottom-0 w-64 hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform h-full hidden fixed top-0 inset-s-0 bottom-0 z-60 bg-[#090b0e] border-e border-[#24282e]" aria-label="Sidebar">
+        <div class="relative flex flex-col h-full max-h-full">
+            <header class="p-5 flex justify-between items-center gap-x-2">
+                <a class="flex items-center gap-3 font-bold text-2xl" href="{% url 'home' %}" aria-label="BLIP home">
+                    <img class="w-8 h-8 object-contain rounded-full" src="{% static 'logo.png' %}" alt="BLIP logo">
+                    <span>blip</span>
+                </a>
+                <button type="button" class="lg:hidden flex justify-center items-center w-7 h-7 border border-[#343a43] text-sm rounded-full" data-hs-overlay="#blip-sidebar" aria-label="Close navigation">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </header>
+
+            <nav class="flex h-full flex-col overflow-y-auto px-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a class="flex items-center gap-4 py-3 px-4 bg-[#1a1e24] text-base font-semibold rounded-xl" href="{% url 'home' %}">
+                            <span class="text-xl" aria-hidden="true">⌂</span>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-4 py-3 px-4 text-base text-[#a9adb5] rounded-xl hover:bg-[#15181d] hover:text-white" href="{% url 'index' %}">
+                            <span class="text-xl" aria-hidden="true">⌕</span>
+                            Explore
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-4 py-3 px-4 text-base text-[#a9adb5] rounded-xl hover:bg-[#15181d] hover:text-white" href="#" aria-disabled="true">
+                            <span class="text-xl" aria-hidden="true">♡</span>
+                            Notifications
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-4 py-3 px-4 text-base text-[#a9adb5] rounded-xl hover:bg-[#15181d] hover:text-white" href="#" aria-disabled="true">
+                            <span class="text-xl" aria-hidden="true">✉</span>
+                            Messages
+                        </a>
+                    </li>
+                    <li>
+                        <a class="flex items-center gap-4 py-3 px-4 text-base text-[#a9adb5] rounded-xl hover:bg-[#15181d] hover:text-white" href="#" aria-disabled="true">
+                            <span class="text-xl" aria-hidden="true">◉</span>
+                            Profile
+                        </a>
+                    </li>
+                </ul>
+                <a class="mt-8 flex items-center justify-center rounded-full bg-[#c6ff24] py-3 font-bold text-[#090b0e] hover:bg-[#d5ff62]" href="{% url 'post_create' %}">
+                    Blip it
+                </a>
+                <div class="mt-auto pt-8 pb-5">
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="flex w-full items-center gap-4 rounded-xl px-4 py-3 text-base text-[#a9adb5] hover:bg-[#15181d] hover:text-white" type="submit">
+                                <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M13 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1"/>
+                                    <path d="m16 16 4-4-4-4"/>
+                                    <path d="M20 12H9"/>
+                                </svg>
+                                Log out
+                            </button>
+                        </form>
+                    {% else %}
+                        <a class="flex w-full items-center gap-4 rounded-xl px-4 py-3 text-base text-[#a9adb5] hover:bg-[#15181d] hover:text-white" href="{% url 'login' %}">
+                            <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M13 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1"/>
+                                <path d="m16 16 4-4-4-4"/>
+                                <path d="M20 12H9"/>
+                            </svg>
+                            Sign in
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="lg:ms-64 lg:me-80 min-h-screen border-e border-[#24282e]">
+        {% block content %}{% endblock %}
+    </main>
+
+    <aside class="hidden lg:block fixed top-0 end-0 bottom-0 w-80 bg-[#090b0e] px-5 py-5" aria-label="Discover">
+        <form class="mb-6" role="search">
+            <label class="sr-only" for="site-search">Search BLIP</label>
+            <div class="flex items-center gap-3 rounded-full bg-[#171a20] px-4 py-3">
+                <span aria-hidden="true">⌕</span>
+                <input id="site-search" type="search" placeholder="Search blip" class="w-full bg-transparent text-sm outline-none placeholder:text-[#777d87]">
+            </div>
+        </form>
+
+        <section class="rounded-xl bg-[#111419] p-4" aria-labelledby="trending-title">
+            <h2 id="trending-title" class="text-lg font-bold mb-5">Trending signals</h2>
+            <ul class="space-y-5">
+                <li>
+                    <p class="text-xs text-[#777d87]">Design · Trending</p>
+                    <a href="#" class="block font-semibold hover:text-[#c6ff24]">#MinimalUI</a>
+                    <p class="text-xs text-[#777d87]">8,204 blips</p>
+                </li>
+                <li>
+                    <p class="text-xs text-[#777d87]">Tech · Trending</p>
+                    <a href="#" class="block font-semibold hover:text-[#c6ff24]">#IndieBuilders</a>
+                    <p class="text-xs text-[#777d87]">5,910 blips</p>
+                </li>
+                <li>
+                    <p class="text-xs text-[#777d87]">Music</p>
+                    <a href="#" class="block font-semibold hover:text-[#c6ff24]">#SunsetPlaylist</a>
+                    <p class="text-xs text-[#777d87]">2,447 blips</p>
+                </li>
+            </ul>
+        </section>
+    </aside>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home | BLIP
+{% endblock %}
+
+{% block content %}
+<div class="w-full border-x border-[#24282e]">
+    <div class="border-b border-[#24282e] px-6 py-5">
+        <h1 class="text-xl font-bold">Home</h1>
+    </div>
+
+    <div class="flex items-center gap-4 border-b border-[#24282e] px-6 py-5">
+        <div class="w-12 h-12 shrink-0 rounded-full bg-[#202b3d]"></div>
+        <button type="button" class="flex-1 text-start text-lg text-[#777d87] hover:text-[#a9adb5]" data-open-create-post>
+            What's happening?
+        </button>
+        <button type="button" class="rounded-full bg-[#c6ff24] px-5 py-2 font-bold text-[#090b0e] hover:bg-[#d5ff62]" data-open-create-post>
+            Blip
+        </button>
+    </div>
+
+    {% for post in posts %}
+        <article class="border-b border-[#24282e] px-6 py-5 hover:bg-[#0d1014]">
+            <div class="flex items-start gap-3">
+                <div class="bg-[#202b3d] w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-lg font-bold">
+                    {{ post.user.username|first|upper }}
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold">{{ post.user.username }}</span>
+                        <span class="text-sm text-[#777d87]">@{{ post.user.username }} · {{ post.created_at|timesince }}</span>
+                    </div>
+                    {% if user == post.user %}
+                        <div class="mt-2 flex gap-3 text-sm">
+                            <a class="text-[#c6ff24] hover:underline" href="{% url 'post_edit' post.id %}">Edit</a>
+                            <a class="text-red-300 hover:underline" href="{% url 'post_delete' post.id %}">Delete</a>
+                        </div>
+                    {% endif %}
+                    <p class="mt-2 text-[17px] leading-relaxed">{{ post.text }}</p>
+                    {% if post.image %}
+                        <img class="mt-3 max-h-96 w-full rounded-xl object-contain" src="{{ post.image.url }}" alt="Image uploaded by {{ post.user.username }}">
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+    {% empty %}
+        <div class="text-center py-20 text-[#777d87]">
+            <h2 class="text-xl font-bold">No posts yet</h2>
+            <p class="text-base-content/60 mt-2">Be the first person to post something.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<div id="create-post-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="create-post-title">
+    <div class="w-full max-w-lg rounded-2xl border border-[#343a43] bg-[#111419] p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-5">
+            <h2 id="create-post-title" class="text-xl font-bold">Create a post</h2>
+            <button type="button" class="text-2xl leading-none text-base-content/60 hover:text-base-content" data-close-create-post aria-label="Close">&times;</button>
+        </div>
+
+        <form method="post" action="{% url 'post_create' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label class="block text-sm font-medium mb-2" for="post-text">What's happening?</label>
+            <textarea id="post-text" name="text" maxlength="250" required rows="5" class="w-full rounded-lg border border-[#343a43] bg-[#090b0e] p-3 focus:outline-none focus:ring-2 focus:ring-[#c6ff24]" placeholder="Share something with BLIP..." data-post-text></textarea>
+            <div class="flex items-center justify-between gap-3 mt-2 text-sm text-[#777d87]">
+                <label for="post-image" class="cursor-pointer rounded-full border border-[#343a43] px-4 py-2 hover:border-[#c6ff24] hover:text-[#c6ff24]">Add image</label>
+                <span><span data-character-count>250</span> characters remaining</span>
+            </div>
+            <input id="post-image" name="image" type="file" accept="image/*" class="hidden" data-modal-image-input>
+            <span class="mt-2 block truncate text-xs text-[#777d87]" data-modal-image-name>No image selected</span>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="py-2 px-4 rounded-lg border border-[#343a43] hover:bg-[#1a1e24]" data-close-create-post>Cancel</button>
+                <button type="submit" class="py-2 px-4 rounded-full bg-[#c6ff24] font-bold text-[#090b0e] hover:bg-[#d5ff62]">Blip it</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.querySelector('#create-post-modal');
+    const textInput = document.querySelector('[data-post-text]');
+    const characterCount = document.querySelector('[data-character-count]');
+    const imageInput = document.querySelector('[data-modal-image-input]');
+    const imageName = document.querySelector('[data-modal-image-name]');
+
+    function closeCreatePost() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.querySelector('[data-open-create-post]').addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        textInput.focus();
+    });
+
+    document.querySelectorAll('[data-close-create-post]').forEach((button) => {
+        button.addEventListener('click', closeCreatePost);
+    });
+
+    textInput.addEventListener('input', () => {
+        characterCount.textContent = 250 - textInput.value.length;
+    });
+
+    imageInput.addEventListener('change', () => {
+        imageName.textContent = imageInput.files.length ? imageInput.files[0].name : 'No image selected';
+    });
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeCreatePost();
+        }
+    });
+</script>
+{% endblock %}
